@@ -1,0 +1,29 @@
+from flask import Flask, request
+import telegram
+import os
+
+TOKEN = "8311871782:AAE-cWo_bs0miq7iCYMatzm92AotPGQ5m7g"
+bot = telegram.Bot(token=TOKEN)
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running!"
+
+@app.route(f'/{TOKEN}', methods=['POST'])
+def respond():
+    update = telegram.Update.de_json(request.get_json(force=True), bot)
+    chat_id = update.message.chat.id
+    message_text = update.message.text
+
+    if message_text == "/start":
+        bot.send_message(chat_id=chat_id, text="👋 Welcome to your Mini App Bot!\nUse the menu to start earning.")
+    else:
+        bot.send_message(chat_id=chat_id, text="I didn’t understand that 😅")
+
+    return "ok"
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
